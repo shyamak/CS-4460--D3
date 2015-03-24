@@ -110,6 +110,9 @@
       var oX = 40;
       var oY = 40;
 
+      //pass color
+      var passColor;
+
       var chart = d3.select("#chart")
                 .append("svg")
                 .attr("width", width)
@@ -158,6 +161,13 @@
           .style("fill", function(d,i) {
             return colorFromCountry(d,i);
           })
+          .on('mouseover', function(){
+          	d3.select(this).attr("pastColor", d3.select(this).style("fill"))
+          		.style("fill", "#FFD700");
+          })
+          .on('mouseout', function(){
+          	d3.select(this).style("fill", d3.select(this).attr("pastColor"));
+          })
           .style("stroke", "#000000");
         
         //SILVER MEDAL CIRCLES
@@ -168,6 +178,13 @@
           .style("fill", function(d,i) {
             return colorFromCountry(d,i);
           })
+          .on('mouseover', function(){
+          	d3.select(this).attr("pastColor", d3.select(this).style("fill"))
+          		.style("fill", "#FFD700");
+          })
+          .on('mouseout', function(){
+          	d3.select(this).style("fill", d3.select(this).attr("pastColor"));
+          })
           .style("stroke", "#000000");
         
         //BRONZE MEDAL CIRCLES
@@ -176,8 +193,15 @@
           .attr("cy", y("Bronze")) // At the chosen Y position, we're now specifying height.
           .attr("r", function(d) { return d.TotalMedals/3; })
           .style("fill", function(d,i) {
-            return colorFromCountry(d,i);
+            	return colorFromCountry(d,i);
           })
+          .on("mouseover", function(){
+      		d3.select(this).attr("pastColor", d3.select(this).style("fill"))
+        	.style("fill", "#FFD700");
+    		})
+          .on('mouseout', function(){
+          d3.select(this).style("fill", 
+          d3.select(this).attr('pastColor'));})
           .style("stroke", "#000000");
            
         
