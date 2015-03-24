@@ -124,40 +124,25 @@
 
       //pass color
       var passColor;
-      var x = d3.scale.linear().domain([1, 50]).range([oX+40,oX+540]);
+
+      //Setting our x and y axes
+            //RangeRoundBands returns the band width. Decimal value is the padding
+            //Range provides the band height (because of the inverted values).
+            var x = d3.scale.linear().domain([1, 50]).range([oX+40,oX+540]);
       
             var y = d3.scale.ordinal().domain(["Gold","Silver","Bronze"]).range([oY+40,oY+140,oY+240]);
 
-            var zoom = d3.behavior.zoom()
-    		.x(x)
-    		.y(y)
-    		.scaleExtent([1, 32])
-    		.on("zoom", zoomed);
-
-    			//Generating circle SVG elements for our data
-        var xAxis = d3.svg.axis().scale(x).tickSize(-height,0,1).orient("bottom");
+            var xAxis = d3.svg.axis().scale(x).tickSize(-height,0,1).orient("bottom");
         var yAxis = d3.svg.axis().scale(y).tickSize(0,0,1).orient("left");
-        
-        var xAxisGroup = chart.append("a")
-          .attr("class","x axis")
-          .attr("transform", "translate(0," + (height-100) + ")")
-          .call(xAxis);
-        var yAxisGroup = chart.append("a")
-          .attr("class","y axis")
-          .attr("transform", "translate(60,10)")
-          .call(yAxis);
-          
-        xAxisGroup.append("text")
-                  .attr("x", 280)
-                  .attr("y", 30)
-                  .text("No of Medals");
 
-
-        function zoomed() {
-  				svg.select(".x.axis").call(xAxis);
-  				svg.select(".y.axis").call(yAxis);
-		}
-		
+        var zoom = d3.behavior.zoom()
+    					.x(x)
+				    	.y(y)
+				    	.scaleExtent([1, 32])
+				    	.on("zoom", function(){
+				    		chart.select(".x.axis").call(xAxis);
+  				chart.select(".y.axis").call(yAxis);
+				    	});
 
       var chart = d3.select("#chart")
                 .append("svg")
@@ -169,9 +154,6 @@
     				.attr("class", "tooltip")               
     				.style("opacity", 0);
         
-            //Setting our x and y axes
-            //RangeRoundBands returns the band width. Decimal value is the padding
-            //Range provides the band height (because of the inverted values).
             
       
             //Pull our data from the CSV file
@@ -183,10 +165,31 @@
           .enter()
           .append("g")
           .attr("transform", function(d) { return "translate(10,10)"; });
-         
+       
+
+        //Generating circle SVG elements for our data
         
+        
+        var xAxisGroup = chart.append("a")
+          .attr("class","x axis")
+          .attr("transform", "translate(0," + (height-100) + ")")
+          .call(xAxis);
+
+        var yAxisGroup = chart.append("a")
+          .attr("class","y axis")
+          .attr("transform", "translate(60,10)")
+          .call(yAxis);
+          
+        xAxisGroup.append("text")
+                  .attr("x", 280)
+                  .attr("y", 30)
+                  .text("No of Medals");
 
 
+	// function zoomed() {
+ //  				chart.select(".x.axis").call(xAxis);
+ //  				chart.select(".y.axis").call(yAxis);
+	// 	}
         //GOLD MEDAL CIRCLES
         circles.append("circle")
           .attr("cx", function(d) { return x(d.GoldMedals); }) // Setting the Y position of individual bars based on the data
