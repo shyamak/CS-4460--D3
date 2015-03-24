@@ -51,21 +51,33 @@
         opacity: 0.7;
       }
       .g path {
-        
         stroke-width: 1;
       }
 
-            .chart text {
-              fill: white;
-              font: 10px sans-serif;
-              text-anchor: middle;
-            }
+      .chart text {
+        fill: white;
+        font: 10px sans-serif;
+        text-anchor: middle;
+      }
 
-             text.xText{
-              fill: black;
-              font: 10px sans-serif;
-              text-anchor: middle;
-            }
+      text.xText{
+        fill: black;
+        font: 10px sans-serif;
+        text-anchor: middle;
+      }
+
+      div.tooltip {   
+  		position: absolute;           
+  		text-align: center;           
+  		width: 60px;                  
+  		height: 28px;                 
+  		padding: 2px;             
+  		font: 12px sans-serif;        
+  		background: lightsteelblue;   
+  		border: 0px;      
+  		border-radius: 8px;           
+  		pointer-events: none;         
+	  }
         </style>
 
 
@@ -112,30 +124,17 @@
 
       //pass color
       var passColor;
-
-      var chart = d3.select("#chart")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height);
-        
-            //Setting our x and y axes
-            //RangeRoundBands returns the band width. Decimal value is the padding
-            //Range provides the band height (because of the inverted values).
-            var x = d3.scale.linear().domain([1, 50]).range([oX+40,oX+540]);
+      var x = d3.scale.linear().domain([1, 50]).range([oX+40,oX+540]);
       
             var y = d3.scale.ordinal().domain(["Gold","Silver","Bronze"]).range([oY+40,oY+140,oY+240]);
-      
-            //Pull our data from the CSV file
-            d3.csv("Olympics.csv", function(error, data){
-               
-        //Circle for Gold Medals
-        var circles = chart.selectAll("g")
-          .data(data)
-          .enter()
-          .append("g")
-          .attr("transform", function(d) { return "translate(10,10)"; });
-         
-        //Generating circle SVG elements for our data
+
+            var zoom = d3.behavior.zoom()
+    		.x(x)
+    		.y(y)
+    		.scaleExtent([1, 32])
+    		.on("zoom", zoomed);
+
+    			//Generating circle SVG elements for our data
         var xAxis = d3.svg.axis().scale(x).tickSize(-height,0,1).orient("bottom");
         var yAxis = d3.svg.axis().scale(y).tickSize(0,0,1).orient("left");
         
@@ -153,6 +152,41 @@
                   .attr("y", 30)
                   .text("No of Medals");
 
+
+        function zoomed() {
+  				svg.select(".x.axis").call(xAxis);
+  				svg.select(".y.axis").call(yAxis);
+		}
+		
+
+      var chart = d3.select("#chart")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .call(zoom);
+
+      var div = d3.select("body").append("div")   
+    				.attr("class", "tooltip")               
+    				.style("opacity", 0);
+        
+            //Setting our x and y axes
+            //RangeRoundBands returns the band width. Decimal value is the padding
+            //Range provides the band height (because of the inverted values).
+            
+      
+            //Pull our data from the CSV file
+            d3.csv("Olympics.csv", function(error, data){
+               
+        //Circle for Gold Medals
+        var circles = chart.selectAll("g")
+          .data(data)
+          .enter()
+          .append("g")
+          .attr("transform", function(d) { return "translate(10,10)"; });
+         
+        
+
+
         //GOLD MEDAL CIRCLES
         circles.append("circle")
           .attr("cx", function(d) { return x(d.GoldMedals); }) // Setting the Y position of individual bars based on the data
@@ -161,14 +195,24 @@
           .style("fill", function(d,i) {
             return colorFromCountry(d,i);
           })
-          .on('mouseover', function(){
+          .on('mouseover', function(d){
           	d3.select(this).attr("pastColor", d3.select(this).style("fill"))
           		.style("fill", "#FFD700");
+
+          	div.transition()        
+                .duration(200)      
+                .style("opacity", .9);      
+            div .html((d.Country) + "<br/>"  + d.TotalMedals)  
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY - 28) + "px");
           })
-          .on('mouseout', function(){
+          .on('mouseout', function(d){
+          	div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
           	d3.select(this).style("fill", d3.select(this).attr("pastColor"));
           })
-          .style("stroke", "#000000");
+        .style("stroke", "#000000");
         
         //SILVER MEDAL CIRCLES
         circles.append("circle")
@@ -178,11 +222,21 @@
           .style("fill", function(d,i) {
             return colorFromCountry(d,i);
           })
-          .on('mouseover', function(){
+          .on('mouseover', function(d){
           	d3.select(this).attr("pastColor", d3.select(this).style("fill"))
           		.style("fill", "#FFD700");
+
+          	div.transition()        
+                .duration(200)      
+                .style("opacity", .9);      
+            div .html((d.Country) + "<br/>"  + d.TotalMedals)  
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY - 28) + "px");
           })
-          .on('mouseout', function(){
+          .on('mouseout', function(d){
+          	div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
           	d3.select(this).style("fill", d3.select(this).attr("pastColor"));
           })
           .style("stroke", "#000000");
@@ -195,13 +249,23 @@
           .style("fill", function(d,i) {
             	return colorFromCountry(d,i);
           })
-          .on("mouseover", function(){
-      		d3.select(this).attr("pastColor", d3.select(this).style("fill"))
-        	.style("fill", "#FFD700");
-    		})
-          .on('mouseout', function(){
-          d3.select(this).style("fill", 
-          d3.select(this).attr('pastColor'));})
+          .on('mouseover', function(d){
+          	d3.select(this).attr("pastColor", d3.select(this).style("fill"))
+          		.style("fill", "#FFD700");
+
+          	div.transition()        
+                .duration(200)      
+                .style("opacity", .9);      
+            div .html((d.Country) + "<br/>"  + d.TotalMedals)  
+                .style("left", (d3.event.pageX) + "px")     
+                .style("top", (d3.event.pageY - 28) + "px");
+          })
+          .on('mouseout', function(d){
+          	div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
+          	d3.select(this).style("fill", d3.select(this).attr("pastColor"));
+          })
           .style("stroke", "#000000");
            
         
