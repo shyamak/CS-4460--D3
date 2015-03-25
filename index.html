@@ -25,9 +25,9 @@
 
         .legend {
             overflow: auto;
-            float: right;
+            float: left;
             text-align: center;
-            border: 2px solid #a1a1a1;
+            
         padding: 10px 2px;
                 background: white;
                 height: 460px;
@@ -70,23 +70,44 @@
         text-anchor: middle;
       }
 
-      #encodedVariables {
+      #leftSide {
         float: left;
-        border: 2px solid #a1a1a1;
+      }
+
+      #encodedVariables {
+        width: 25vw;
         padding: 10px 2px;
       }
 
       #filters {
-        float: left;
-        border: 2px solid #a1a1a1;
-        padding: 10px 2px;
+        padding: 2px 2px;
       }
 
-      #title {
+      .title {
         width: 100vw;
-        height: 10vh;
+        height: 3vh;
+        color: white;
+        background-color: black;
         text-align: center;
-        text-decoration: solid bold;
+        padding: 10px 2px;
+        background: -webkit-linear-gradient(left, orange, red, green, blue); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(right, orange, red, green, blue); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(right, orange, red, green, blue); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(to right, orange, red, green, blue); /* Standard syntax*/
+      }
+
+      .title img{
+        width: 3%;
+        height: 100%;
+      }
+
+      #breathingSpace {
+        width: 100vw;
+        height: 5vh;
+      }
+
+      #breathingSpace2 {
+        height: 10vh;
       }
 
       div.tooltip {   
@@ -101,6 +122,29 @@
   		border-radius: 8px;           
   		pointer-events: none;         
 	  }
+
+    table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+th, td {
+    padding: 5px;
+    text-align: left;
+}
+table#t01 tr:nth-child(even) {
+    background-color: #eee;
+}
+table#t01 tr:nth-child(odd) {
+   background-color:#fff;
+}
+table th  {
+    background: -webkit-linear-gradient(left, orange, red, green, blue); /* For Safari 5.1 to 6.0 */
+        background: -o-linear-gradient(right, orange, red, green, blue); /* For Opera 11.1 to 12.0 */
+        background: -moz-linear-gradient(right, orange, red, green, blue); /* For Firefox 3.6 to 15 */
+        background: linear-gradient(to right, orange, red, green, blue); /* Standard syntax*/
+    color: white;
+}
         </style>
 
 
@@ -108,24 +152,37 @@
 
 
     <body>
-        <div id="title">Chart Title</div>
-        <div id="chart" class="chart"></div>
-        <div id="encodedVariables">
-        Legend for variables encoded:<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;Size: Total no of medals won<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;Color: Countries<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;Y-Axes: Categories of medals (Gold, Silver, Bronze)
+        <div class="title"><img src="Olympic_Rings.jpg" alt="" />&nbsp;&nbsp;The Olympics: Representing the medal tally through InfoVis</div>
+        <div id="breathingSpace"></div>
+        <div id="leftSide">
+      <div id="filters">
+      <table id="t02">
+        <tr><th>Filter by Continent</th></tr>
+        <tr><td><input class="filterButton" type="checkbox" id="North America" value="NA">North America</input></td></tr>
+        <tr><td><input class="filterButton" type="checkbox" id="South America" value="SA">South America</input></td></tr>
+        <tr><td><input class="filterButton" type="checkbox" id="Europe" value="EU">Europe</input></td></tr>
+        <tr><td><input class="filterButton" type="checkbox" id="Africa" value="AF">Africa</input></td></tr>
+        <tr><td><input class="filterButton" type="checkbox" id="Asia" value="AS">Asia/Australia</input></td></tr>
+      </table>
+    </div>
+    <div id="breathingSpace2"></div>
+    <div id="encodedVariables">
+        <table id="t01">
+          <tr><th colspan="3">Legends for the Variables Encoded</th></tr>
+          <tr><td>Size</td><td>Total no of Medals won</td></tr>
+          <tr><td>Color</td><td>Countries</td></tr>
+          <tr><td>Y-Axes</td><td>Categories of Medals Won</td></tr>
+        </table>
       </div>
-        <div id="legend" class="legend">Countries (Represented by colors)</div>
+      </div>
+        <div id="chart" class="chart"></div>
         
-      <br><br><br><br><br><br><div id="filters">
-			<br>Filter by Continent:<br>
-			<input class="filterButton" type="checkbox" id="North America" value="NA">North America</input><br />
-			<input class="filterButton" type="checkbox" id="South America" value="SA">South America</input><br />
-			<input class="filterButton" type="checkbox" id="Europe" value="EU">Europe</input><br />
-			<input class="filterButton" type="checkbox" id="Africa" value="AF">Africa</input><br />
-			<input class="filterButton" type="checkbox" id="Asia" value="AS">Asia</input><br />
-		</div>
+        <div id="legend" class="legend">
+        <table>
+          <tr><th>Countries</th></tr>    
+        </table>
+      </div>
+      
       
         <script type="text/javascript"> //src = d3/d3.js?
 
@@ -235,7 +292,7 @@
 
 
       var zoom = d3.behavior.zoom()
-      .scaleExtent([1, 10])
+      .scaleExtent([1, 5])
       .on("zoom", zoomed);
       
     var drag = d3.behavior.drag()
@@ -248,15 +305,12 @@
       d3.event.sourceEvent.stopPropagation();
       d3.select(this).classed("dragging", true);
     }
-
     function dragged(d) {
       d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
     }
-
     function dragended(d) {
       d3.select(this).classed("dragging", false);
     }
-
     var chart = d3.select("#chart")
       .append("svg")
       .attr("width", width)
@@ -264,7 +318,13 @@
       .call(zoom);
   
     function zoomed() {
-      chart.selectAll.select(this).attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+      chart.selectAll("circle").attr("transform", function() {
+      var currentX = d3.select(this).attr("cx");
+    var translateX = ((currentX)-(d3.event.translate[0]/(1-d3.event.scale)))*d3.event.scale;
+    if(isNaN(translateX) || !isFinite(translateX))
+      return "translate(0,0)";
+    return "translate("+ translateX +",0)";
+      });
     }
 
       //Setting our x and y axes
