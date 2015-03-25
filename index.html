@@ -23,11 +23,15 @@
                 fill: white;
             }
 
-            .legend {
-                overflow: auto;
+        .legend {
+            overflow: auto;
+            float: right;
+            text-align: center;
+            border: 2px solid #a1a1a1;
+        padding: 10px 2px;
                 background: white;
                 height: 460px;
-                width: 680px;
+                width: 375px;
             }
       
       .x.axis text {
@@ -66,6 +70,25 @@
         text-anchor: middle;
       }
 
+      #encodedVariables {
+        float: left;
+        border: 2px solid #a1a1a1;
+        padding: 10px 2px;
+      }
+
+      #filters {
+        float: left;
+        border: 2px solid #a1a1a1;
+        padding: 10px 2px;
+      }
+
+      #title {
+        width: 100vw;
+        height: 10vh;
+        text-align: center;
+        text-decoration: solid bold;
+      }
+
       div.tooltip {   
   		position: absolute;           
   		text-align: center;           
@@ -85,9 +108,17 @@
 
 
     <body>
+        <div id="title">Chart Title</div>
         <div id="chart" class="chart"></div>
-        <div id="legend" class="legend"></div>
-        <div id="filters">
+        <div id="encodedVariables">
+        Legend for variables encoded:<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;Size: Total no of medals won<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;Color: Countries<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;Y-Axes: Categories of medals (Gold, Silver, Bronze)
+      </div>
+        <div id="legend" class="legend">Countries (Represented by colors)</div>
+        
+      <br><br><br><br><br><br><div id="filters">
 			<br>Filter by Continent:<br>
 			<input class="filterButton" type="checkbox" id="North America" value="NA">North America</input><br />
 			<input class="filterButton" type="checkbox" id="South America" value="SA">South America</input><br />
@@ -95,6 +126,7 @@
 			<input class="filterButton" type="checkbox" id="Africa" value="AF">Africa</input><br />
 			<input class="filterButton" type="checkbox" id="Asia" value="AS">Asia</input><br />
 		</div>
+      
         <script type="text/javascript"> //src = d3/d3.js?
 
       function colorFromCountry(x,i) {
@@ -178,9 +210,9 @@
             
       //##############    1    ####################
       //Setting the size of our canvas
-      var width = 680;
+      var width = 650;
       var height = 460;
-      var width2 = 680;
+      var width2 = 375;
       var oX = 40;
       var oY = 40;
 
