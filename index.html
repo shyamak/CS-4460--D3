@@ -291,8 +291,22 @@ table th  {
       var passColor;
 
 
-      var zoom = d3.behavior.zoom()
-      .scaleExtent([1, 5])
+      
+
+      //Setting our x and y axes
+            //RangeRoundBands returns the band width. Decimal value is the padding
+            //Range provides the band height (because of the inverted values).
+            var x = d3.scale.linear().domain([1, 50]).range([oX+40,oX+540]);
+      
+            var y = d3.scale.ordinal().domain(["Gold","Silver","Bronze"]).range([oY+40,oY+140,oY+240]);
+
+            var xAxis = d3.svg.axis().scale(x).tickSize(-height,0,1).orient("bottom");
+        var yAxis = d3.svg.axis().scale(y).tickSize(0,0,1).orient("left");
+
+
+        var zoom = d3.behavior.zoom()
+        .x(x)
+      .scaleExtent([1, 32])
       .on("zoom", zoomed);
       
     var drag = d3.behavior.drag()
@@ -318,25 +332,17 @@ table th  {
       .call(zoom);
   
     function zoomed() {
-      chart.selectAll("circle").attr("transform", function() {
-      var currentX = d3.select(this).attr("cx");
-    var translateX = ((currentX)-(d3.event.translate[0]/(1-d3.event.scale)))*d3.event.scale;
-    if(isNaN(translateX) || !isFinite(translateX))
-      return "translate(0,0)";
-    return "translate("+ translateX +",0)";
-      });
+      chart.selectAll("circle").attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    //   chart.selectAll("circle").attr("transform", function() {
+    //   var currentX = d3.select(this).attr("cx");
+    //   var currentY = d3.select(this).attr("cy");
+    // var translateX = ((currentX)-(d3.event.translate[0]/(1-d3.event.scale)))*d3.event.scale;
+    // var translateY = ((currentY)-(d3.event.translate[0]/(1-d3.event.scale)))*d3.event.scale;
+    // if(isNaN(translateX) || !isFinite(translateX))
+    //   return "translate(0,0)";
+    // return "translate("+ translateX +",0)";
+    //   });
     }
-
-      //Setting our x and y axes
-            //RangeRoundBands returns the band width. Decimal value is the padding
-            //Range provides the band height (because of the inverted values).
-            var x = d3.scale.linear().domain([1, 50]).range([oX+40,oX+540]);
-      
-            var y = d3.scale.ordinal().domain(["Gold","Silver","Bronze"]).range([oY+40,oY+140,oY+240]);
-
-            var xAxis = d3.svg.axis().scale(x).tickSize(-height,0,1).orient("bottom");
-        var yAxis = d3.svg.axis().scale(y).tickSize(0,0,1).orient("left");
-
 
       var div = d3.select("body").append("div")   
     				.attr("class", "tooltip")               
@@ -386,9 +392,12 @@ table th  {
           .style("fill", function(d,i) {
             return colorFromCountry(d,i);
           })
+          .style("stroke", "#000000")
           .on('mouseover', function(d){
           	d3.select(this).attr("pastColor", d3.select(this).style("fill"))
           		.style("fill", "#FFD700");
+            d3.select(this).attr("pastStrokeColor", d3.select(this).style("stroke"))
+              .style("stroke", "#FFD700");
 
           	div.transition()        
                 .duration(200)      
@@ -402,8 +411,8 @@ table th  {
                 .duration(500)      
                 .style("opacity", 0);   
           	d3.select(this).style("fill", d3.select(this).attr("pastColor"));
-          })
-        .style("stroke", "#000000");
+            d3.select(this).style("stroke", d3.select(this).attr("pastStrokeColor"));
+          });
         
         //SILVER MEDAL CIRCLES
         circles.append("circle")
