@@ -69,8 +69,8 @@
       div.tooltip {   
   		position: absolute;           
   		text-align: center;           
-  		width: 60px;                  
-  		height: 28px;                 
+  		width: 120px;                  
+  		height: 40px;                 
   		padding: 2px;             
   		font: 12px sans-serif;        
   		background: lightsteelblue;   
@@ -175,11 +175,12 @@
 					return "none";
 				});
 		}
-            //##############    1    ####################
-            //Setting the size of our canvas
-            var width = 680;
-            var height = 460;
-            var width2 = 680;
+            
+      //##############    1    ####################
+      //Setting the size of our canvas
+      var width = 680;
+      var height = 460;
+      var width2 = 680;
       var oX = 40;
       var oY = 40;
 
@@ -200,6 +201,40 @@
       //pass color
       var passColor;
 
+
+      var zoom = d3.behavior.zoom()
+      .scaleExtent([1, 10])
+      .on("zoom", zoomed);
+      
+    var drag = d3.behavior.drag()
+      .origin(function(d) { return d; })
+      .on("dragstart", dragstarted)
+      .on("drag", dragged)
+      .on("dragend", dragended);
+      
+    function dragstarted(d) {
+      d3.event.sourceEvent.stopPropagation();
+      d3.select(this).classed("dragging", true);
+    }
+
+    function dragged(d) {
+      d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+    }
+
+    function dragended(d) {
+      d3.select(this).classed("dragging", false);
+    }
+
+    var chart = d3.select("#chart")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .call(zoom);
+  
+    function zoomed() {
+      chart.selectAll.select(this).attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+
       //Setting our x and y axes
             //RangeRoundBands returns the band width. Decimal value is the padding
             //Range provides the band height (because of the inverted values).
@@ -210,20 +245,6 @@
             var xAxis = d3.svg.axis().scale(x).tickSize(-height,0,1).orient("bottom");
         var yAxis = d3.svg.axis().scale(y).tickSize(0,0,1).orient("left");
 
-        var zoom = d3.behavior.zoom()
-    					.x(x)
-				    	.y(y)
-				    	.scaleExtent([1, 32])
-				    	.on("zoom", function(){
-				    		chart.select(".x.axis").call(xAxis);
-  				chart.select(".y.axis").call(yAxis);
-				    	});
-
-      var chart = d3.select("#chart")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .call(zoom);
 
       var div = d3.select("body").append("div")   
     				.attr("class", "tooltip")               
@@ -280,9 +301,9 @@
           	div.transition()        
                 .duration(200)      
                 .style("opacity", .9);      
-            div .html((d.Country) + "<br/>"  + d.TotalMedals)  
+            div .html("<b>"+(d.Country)+"</b>" + "<br/>"  + "No of Gold Medals: "+ d.GoldMedals+ "<br/>" + "Total Medals: " + d.TotalMedals)  
                 .style("left", (d3.event.pageX) + "px")     
-                .style("top", (d3.event.pageY - 28) + "px");
+                .style("top", (d3.event.pageY) + "px");
           })
           .on('mouseout', function(d){
           	div.transition()        
@@ -306,8 +327,9 @@
 
           	div.transition()        
                 .duration(200)      
-                .style("opacity", .9);      
-            div .html((d.Country) + "<br/>"  + d.TotalMedals)  
+                .style("opacity", .9)
+                .style("width", 130 + "px");
+            div .html("<b>"+(d.Country)+"</b>" + "<br/>"  + "No of Silver Medals: "+ d.Silver+ "<br/>" + "Total Medals: " + d.TotalMedals)  
                 .style("left", (d3.event.pageX) + "px")     
                 .style("top", (d3.event.pageY - 28) + "px");
           })
@@ -333,8 +355,9 @@
 
           	div.transition()        
                 .duration(200)      
-                .style("opacity", .9);      
-            div .html((d.Country) + "<br/>"  + d.TotalMedals)  
+                .style("opacity", .9)
+                .style("width", 140 + "px");;      
+            div .html("<b>"+(d.Country)+"</b>" + "<br/>"  + "No of Bronze Medals: "+ d.Bronze+ "<br/>" + "Total Medals: " + d.TotalMedals)  
                 .style("left", (d3.event.pageX) + "px")     
                 .style("top", (d3.event.pageY - 28) + "px");
           })
